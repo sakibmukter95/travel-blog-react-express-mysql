@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: travel_blog_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: blogArticle
+      MYSQL_USER: bloguser
+      MYSQL_PASSWORD: blogpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - travel_blog_network
+
+  # Express Backend
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel_blog_server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: bloguser
+      DB_PASSWORD: blogpass
+      DB_NAME: blogArticle
+      JWT_SECRET: your-super-secret-jwt-key-change-this
+      CLIENT_URL: http://localhost:3000
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql
+    volumes:
+      - ./server/uploads:/app/uploads
+    networks:
+      - travel_blog_network
+
+  # React Frontend
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: travel_blog_client
+    restart: unless-stopped
+    environment:
+      REACT_APP_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    networks:
+      - travel_blog_network
+
+volumes:
+  mysql_data:
+
+networks:
+  travel_blog_network:
+    driver: bridge
