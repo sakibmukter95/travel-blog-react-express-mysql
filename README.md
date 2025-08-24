@@ -8,11 +8,6 @@ A complete full-stack web application demonstrating modern web development pract
 ![Express](https://img.shields.io/badge/Express-4.19.2-black?logo=express)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-## 🚀 Live Demo
-
-- **Frontend**: [Demo Link]
-- **Backend API**: [API Documentation]
-
 ## ✨ Features
 
 ### 🔧 Technical Features
